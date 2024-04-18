@@ -26,6 +26,7 @@ except Exception as e:
 
 ROOT_API = "https://api.stability.ai/v2beta/"
 
+
 class StabilityBase:
     API_ENDPOINT = ""
     POLL_ENDPOINT = ""
@@ -38,7 +39,7 @@ class StabilityBase:
     RETURN_TYPES = ("IMAGE",)
     FUNCTION = "call"
     CATEGORY = "Stability"
-    
+
     def call(self, *args, **kwargs):
         
         buffered = BytesIO()
@@ -55,12 +56,10 @@ class StabilityBase:
         else:
             kwargs.pop("strength", None)
 
-
         headers = {
             "Authorization": API_KEY,
         }
-        
-                
+
         if kwargs.get("api_key override"):
             headers = {
                 "Authorization": kwargs.get("api_key override"),
@@ -132,6 +131,7 @@ class StabilityBase:
     def _get_data(self, **kwargs):
         return {k: v for k, v in kwargs.items() if k != "image"}
 
+
 class StabilityCore(StabilityBase):
     API_ENDPOINT = "stable-image/generate/core"
     ACCEPT = "image/*"
@@ -145,6 +145,7 @@ class StabilityCore(StabilityBase):
             "api_key override": ("STRING", {"multiline": False}),
         },
     }
+
 
 class StabilityCreativeUpscale(StabilityBase):
     API_ENDPOINT = "stable-image/upscale/creative"
@@ -163,6 +164,7 @@ class StabilityCreativeUpscale(StabilityBase):
             "api_key override": ("STRING", {"multiline": False}),
         }
     }
+
 
 class StabilityRemoveBackground(StabilityBase):
     API_ENDPOINT = "stable-image/edit/remove-background"
@@ -198,6 +200,7 @@ class StabilityInpainting(StabilityBase):
             "image": buffered.getvalue(),
             "mask": buffered_mask.getvalue(),
         }
+
 
 class StabilitySearchAndReplace(StabilityBase):
     API_ENDPOINT = "stable-image/edit/search-and-replace"
@@ -236,6 +239,7 @@ class StabilitySD3(StabilityBase):
         },
     }
 
+
 class StabilityOutpainting(StabilityBase):
     API_ENDPOINT = "stable-image/edit/outpaint"
     ACCEPT = "image/*"
@@ -253,7 +257,8 @@ class StabilityOutpainting(StabilityBase):
             "output_format": (["png", "webp", "jpeg"],),
             "api_key override": ("STRING", {"multiline": False}),
         },
-    }    
+    }
+
 
 NODE_CLASS_MAPPINGS = {
     "Stability Creative Upscale": StabilityCreativeUpscale,
