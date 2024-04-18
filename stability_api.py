@@ -108,7 +108,12 @@ class StabilityBase:
         else:
             error_info = response.json()
             if error_info.get("name") == "unauthorized":
-                raise Exception(f"Stability API Error: Unauthorized.\n\nUse your Stability AI API key by:\n1. Setting the SAI_API_KEY environment variable to your API key\n3. Placing inside sai_platform_key.txt\n4. Passing the API key as an argument to the function with the key 'api_key_override'")
+                raise Exception("Stability API Error: Unauthorized.\n\nUse your Stability AI API key by:\n1. Setting the SAI_API_KEY environment variable to your API key\n3. Placing inside sai_platform_key.txt\n4. Passing the API key as an argument to the function with the key 'api_key_override'")
+            if error_info.get("name") == "payment_required":
+                raise Exception("Stability API Error: Not enough credits.\n\nPlease ensure your SAI API account has enough credits to complete this action.")
+            if error_info.get("name") == "bad_request":
+                errors = '\n'.join(error_info.get('errors'))
+                raise Exception(f"Stability API Error: Bad request.\n\n{errors}")
             else:
                 raise Exception(f"Stability API Error: {error_info}")
     
