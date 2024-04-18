@@ -138,12 +138,14 @@ class StabilityCore(StabilityBase):
     INPUT_SPEC = {
         "required": {
             "prompt": ("STRING", {"multiline": True}),
+        },
+        "optional": {
             "negative_prompt": ("STRING", {"multiline": True}),
             "seed": ("INT", {"default": 0, "min": 0, "max": 4294967294}),
             "output_format": (["png", "webp", "jpeg"],),
             "aspect_ratio": (["16:9", "1:1", "21:9", "2:3", "3:2", "4:5", "5:4", "9:16", "9:21"],),
             "api_key_override": ("STRING", {"multiline": False}),
-        },
+        }
     }
 
 
@@ -182,12 +184,14 @@ class StabilityInpainting(StabilityBase):
         "required": {
             "image": ("IMAGE",),
             "mask": ("MASK",),
-            "prompt": ("STRING", {"multiline": True, "default": "a winter wonderland"}),
-            "negative_prompt": ("STRING", {"multiline": True, "default": "a post-apocalyptic world"}),
+            "prompt": ("STRING", {"multiline": True, "default": ""}),\
+        },
+        "optional": {
+            "negative_prompt": ("STRING", {"multiline": True, "default": ""}),\
             "seed": ("INT", {"default": 0, "min": 0, "max": 4294967294}),
             "output_format": (["png", "webp", "jpeg"],),
             "api_key_override": ("STRING", {"multiline": False}),
-        },
+        }
     }
     def _get_files(self, buffered, **kwargs):
         mask = kwargs.get("mask")
@@ -210,12 +214,12 @@ class StabilitySearchAndReplace(StabilityBase):
             "image": ("IMAGE",),
             "search_prompt": ("STRING", {"multiline": True}, "Search Prompt"),
             "prompt": ("STRING", {"multiline": True}),
-            "output_format": (["png", "webp", "jpeg"],),
         },
         "optional": {
-            "seed": ("INT", {"default": 0, "min": 0, "max": 4294967294}),
             "negative_prompt": ("STRING", {"multiline": True}),
+            "seed": ("INT", {"default": 0, "min": 0, "max": 4294967294}),
             "api_key_override": ("STRING", {"multiline": False}),
+            "output_format": (["png", "webp", "jpeg"],),
         },
     }
 
@@ -227,14 +231,14 @@ class StabilitySD3(StabilityBase):
         "required": {
             "model": (["sd3", "sd3-turbo"],),
             "prompt": ("STRING", {"multiline": True}),
-            "negative_prompt": ("STRING", {"multiline": True}),
-            "seed": ("INT", {"default": 0, "min": 0, "max": 4294967294}),
-            "output_format": (["png", "jpeg"],),
         },
         "optional": {
             "image": ("IMAGE",),
+            "negative_prompt": ("STRING", {"multiline": True}),
+            "seed": ("INT", {"default": 0, "min": 0, "max": 4294967294}),
             "strength": ("FLOAT", {"default": 0.5, "min": 0.01, "max": 1.0, "step": 0.01}),
             "aspect_ratio": (["16:9", "1:1", "21:9", "2:3", "3:2", "4:5", "5:4", "9:16", "9:21"],),
+            "output_format": (["png", "jpeg"],),
             "api_key_override": ("STRING", {"multiline": False}),
         },
     }
