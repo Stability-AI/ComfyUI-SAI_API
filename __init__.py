@@ -1,4 +1,4 @@
-from stability_api import StabilityCreativeUpscale, StabilityRemoveBackground, StabilityInpainting, StabilityCore, StabilitySearchAndReplace, StabilityOutpainting, StabilitySD3
+from .stability_api import StabilityCreativeUpscale, StabilityRemoveBackground, StabilityInpainting, StabilityCore, StabilitySearchAndReplace, StabilityOutpainting, StabilitySD3
 
 NODE_CLASS_MAPPINGS = {
     "Stability Creative Upscale": StabilityCreativeUpscale,
