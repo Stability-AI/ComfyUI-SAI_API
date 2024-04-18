@@ -60,13 +60,13 @@ class StabilityBase:
             "Authorization": API_KEY,
         }
 
-        if kwargs.get("api_key override"):
+        if kwargs.get("api_key_override"):
             headers = {
-                "Authorization": kwargs.get("api_key override"),
+                "Authorization": kwargs.get("api_key_override"),
             }
 
         if headers.get("Authorization") is None:
-            raise Exception(f"No Stability key set.\n\nUse your Stability AI API key by:\n1. Setting the SAI_API_KEY environment variable to your API key\n3. Placing inside sai_platform_key.txt\n4. Passing the API key as an argument to the function with the key 'api_key override'")
+            raise Exception(f"No Stability key set.\n\nUse your Stability AI API key by:\n1. Setting the SAI_API_KEY environment variable to your API key\n3. Placing inside sai_platform_key.txt\n4. Passing the API key as an argument to the function with the key 'api_key_override'")
 
         headers["Accept"] = self.ACCEPT
 
@@ -108,7 +108,7 @@ class StabilityBase:
         else:
             error_info = response.json()
             if error_info.get("name") == "unauthorized":
-                raise Exception(f"Stability API Error: Unauthorized.\n\nUse your Stability AI API key by:\n1. Setting the SAI_API_KEY environment variable to your API key\n3. Placing inside sai_platform_key.txt\n4. Passing the API key as an argument to the function with the key 'api_key override'")
+                raise Exception(f"Stability API Error: Unauthorized.\n\nUse your Stability AI API key by:\n1. Setting the SAI_API_KEY environment variable to your API key\n3. Placing inside sai_platform_key.txt\n4. Passing the API key as an argument to the function with the key 'api_key_override'")
             else:
                 raise Exception(f"Stability API Error: {error_info}")
     
@@ -142,7 +142,7 @@ class StabilityCore(StabilityBase):
             "seed": ("INT", {"default": 0, "min": 0, "max": 4294967294}),
             "output_format": (["png", "webp", "jpeg"],),
             "aspect_ratio": (["16:9", "1:1", "21:9", "2:3", "3:2", "4:5", "5:4", "9:16", "9:21"],),
-            "api_key override": ("STRING", {"multiline": False}),
+            "api_key_override": ("STRING", {"multiline": False}),
         },
     }
 
@@ -161,7 +161,7 @@ class StabilityCreativeUpscale(StabilityBase):
             "seed": ("INT", {"default": 0, "min": 0, "max": 4294967294}),
             "creativity": ("FLOAT", {"default": 0.3, "min": 0.01, "max": 0.35, "step": 0.01}),
             "output_format": (["png", "webp", "jpeg"],),
-            "api_key override": ("STRING", {"multiline": False}),
+            "api_key_override": ("STRING", {"multiline": False}),
         }
     }
 
@@ -186,7 +186,7 @@ class StabilityInpainting(StabilityBase):
             "negative_prompt": ("STRING", {"multiline": True, "default": "a post-apocalyptic world"}),
             "seed": ("INT", {"default": 0, "min": 0, "max": 4294967294}),
             "output_format": (["png", "webp", "jpeg"],),
-            "api_key override": ("STRING", {"multiline": False}),
+            "api_key_override": ("STRING", {"multiline": False}),
         },
     }
     def _get_files(self, buffered, **kwargs):
@@ -215,7 +215,7 @@ class StabilitySearchAndReplace(StabilityBase):
         "optional": {
             "seed": ("INT", {"default": 0, "min": 0, "max": 4294967294}),
             "negative_prompt": ("STRING", {"multiline": True}),
-            "api_key override": ("STRING", {"multiline": False}),
+            "api_key_override": ("STRING", {"multiline": False}),
         },
     }
 
@@ -235,7 +235,7 @@ class StabilitySD3(StabilityBase):
             "image": ("IMAGE",),
             "strength": ("FLOAT", {"default": 0.5, "min": 0.01, "max": 1.0, "step": 0.01}),
             "aspect_ratio": (["16:9", "1:1", "21:9", "2:3", "3:2", "4:5", "5:4", "9:16", "9:21"],),
-            "api_key override": ("STRING", {"multiline": False}),
+            "api_key_override": ("STRING", {"multiline": False}),
         },
     }
 
@@ -255,6 +255,6 @@ class StabilityOutpainting(StabilityBase):
             "prompt": ("STRING", {"multiline": True}),
             "seed": ("INT", {"default": 0, "min": 0, "max": 4294967294}),
             "output_format": (["png", "webp", "jpeg"],),
-            "api_key override": ("STRING", {"multiline": False}),
+            "api_key_override": ("STRING", {"multiline": False}),
         },
     }
