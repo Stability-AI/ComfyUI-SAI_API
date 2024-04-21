@@ -56,6 +56,10 @@ class StabilityBase:
         else:
             kwargs.pop("strength", None)
 
+        style = kwargs.get('style', False)
+        if style is False:
+            kwargs.pop('style_preset', None)
+        
         headers = {
             "Authorization": API_KEY,
         }
@@ -149,6 +153,8 @@ class StabilityCore(StabilityBase):
             "seed": ("INT", {"default": 0, "min": 0, "max": 4294967294}),
             "output_format": (["png", "webp", "jpeg"],),
             "aspect_ratio": (["16:9", "1:1", "21:9", "2:3", "3:2", "4:5", "5:4", "9:16", "9:21"],),
+            "style": ("BOOLEAN", {"default": False}),
+            "style_preset": (["3d-model", "analog-film", "anime", "cinematic", "comic-book", "digital-art", "enhance", "fantasy-art", "isometric", "line-art", "low-poly", "modeling-compound", "neon-punk", "origami", "photographic", "pixel-art", "tile-texture"],),
             "api_key_override": ("STRING", {"multiline": False}),
         }
     }
