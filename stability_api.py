@@ -16,7 +16,6 @@ try:
         dir_path = os.path.dirname(os.path.realpath(__file__))
         with open(os.path.join(dir_path, "sai_platform_key.txt"), "r") as f:
             API_KEY = f.read().strip()
-            print(f"API Key found in sai_platform_key.txt: {API_KEY}")
         # Validate the key is not empty
         if API_KEY.strip() == "":
             raise Exception(f"API Key is required to use the Stability API. \nPlease set the SAI_API_KEY environment variable to your API key or place in {dir_path}/sai_platform_key.txt.")
@@ -268,6 +267,41 @@ class StabilityOutpainting(StabilityBase):
         },
         "optional": {
             "prompt": ("STRING", {"multiline": True}),
+            "seed": ("INT", {"default": 0, "min": 0, "max": 4294967294}),
+            "output_format": (["png", "webp", "jpeg"],),
+            "api_key_override": ("STRING", {"multiline": False}),
+        },
+    }
+
+class StabilityControlSketch(StabilityBase):
+    API_ENDPOINT = "stable-image/control/sketch"
+    ACCEPT = "image/*"
+    INPUT_SPEC = {
+        "required": {
+            "image": ("IMAGE",),
+            "prompt": ("STRING", {"multiline": True}),
+        },
+        "optional": {
+            "control_strength": ("FLOAT", {"default": 0.7, "min": 0.01, "max": 1.0, "step": 0.01}),
+            "negative_prompt": ("STRING", {"multiline": True}),
+            "seed": ("INT", {"default": 0, "min": 0, "max": 4294967294}),
+            "output_format": (["png", "webp", "jpeg"],),
+            "api_key_override": ("STRING", {"multiline": False}),
+        },
+    }
+
+
+class StabilityControlStructure(StabilityBase):
+    API_ENDPOINT = "stable-image/control/structure"
+    ACCEPT = "image/*"
+    INPUT_SPEC = {
+        "required": {
+            "image": ("IMAGE",),
+            "prompt": ("STRING", {"multiline": True}),
+        },
+        "optional": {
+            "control_strength": ("FLOAT", {"default": 0.7, "min": 0.01, "max": 1.0, "step": 0.01}),
+            "negative_prompt": ("STRING", {"multiline": True}),
             "seed": ("INT", {"default": 0, "min": 0, "max": 4294967294}),
             "output_format": (["png", "webp", "jpeg"],),
             "api_key_override": ("STRING", {"multiline": False}),
