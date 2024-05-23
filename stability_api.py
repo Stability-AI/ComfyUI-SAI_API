@@ -8,23 +8,28 @@ from io import BytesIO
 import os
 import time
 
+ROOT_API = "https://api.stability.ai/v2beta/"
 API_KEY = os.environ.get("SAI_API_KEY")
 
-# Check for API key in file as a backup, not recommended
-try:
-    if not API_KEY:
-        dir_path = os.path.dirname(os.path.realpath(__file__))
-        with open(os.path.join(dir_path, "sai_platform_key.txt"), "r") as f:
-            API_KEY = f.read().strip()
-        # Validate the key is not empty
-        if API_KEY.strip() == "":
-            raise Exception(f"API Key is required to use the Stability API. \nPlease set the SAI_API_KEY environment variable to your API key or place in {dir_path}/sai_platform_key.txt.")
-        
-except Exception as e:
-    print(f"\n\n***API Key is required to use the Stability API. Please set the SAI_API_KEY environment variable to your API key or place in {dir_path}/sai_platform_key.txt.***\n\n")
+def get_api_key():
+    global API_KEY
+    if API_KEY is not None:
+        return API_KEY
 
-ROOT_API = "https://api.stability.ai/v2beta/"
+    # Check for API key in file as a backup, not recommended
+    try:
+        if not API_KEY:
+            dir_path = os.path.dirname(os.path.realpath(__file__))
+            with open(os.path.join(dir_path, "sai_platform_key.txt"), "r") as f:
+                API_KEY = f.read().strip()
+            # Validate the key is not empty
+            if API_KEY.strip() == "":
+                raise Exception(f"API Key is required to use the Stability API. \nPlease set the SAI_API_KEY environment variable to your API key or place in {dir_path}/sai_platform_key.txt.")
 
+    except Exception as e:
+        print(f"\n\n***API Key is required to use the Stability API. Please set the SAI_API_KEY environment variable to your API key or place in {dir_path}/sai_platform_key.txt.***\n\n")
+
+    return API_KEY
 
 class StabilityBase:
     API_ENDPOINT = ""
@@ -40,11 +45,11 @@ class StabilityBase:
     CATEGORY = "Stability"
 
     def call(self, *args, **kwargs):
-        
+
         buffered = BytesIO()
         files = {'none': None}
         data = None
-        
+
         image = kwargs.get('image', None)
         if image is not None:
             kwargs["mode"] = "image-to-image"
@@ -58,15 +63,12 @@ class StabilityBase:
         style = kwargs.get('style', False)
         if style is False:
             kwargs.pop('style_preset', None)
-        
-        headers = {
-            "Authorization": API_KEY,
-        }
 
+        headers = {}
         if kwargs.get("api_key_override"):
-            headers = {
-                "Authorization": kwargs.get("api_key_override"),
-            }
+            headers["Authorization"] = kwargs.get("api_key_override")
+        else:
+            headers["Authorization"] = get_api_key()
 
         if headers.get("Authorization") is None:
             raise Exception(f"No Stability key set.\n\nUse your Stability AI API key by:\n1. Setting the SAI_API_KEY environment variable to your API key\n3. Placing inside sai_platform_key.txt\n4. Passing the API key as an argument to the function with the key 'api_key_override'")
@@ -119,7 +121,7 @@ class StabilityBase:
                 raise Exception(f"Stability API Error: Bad request.\n\n{errors}")
             else:
                 raise Exception(f"Stability API Error: {error_info}")
-    
+
     def _return_image(self, response):
         result_image = Image.open(BytesIO(response.content))
         result_image = result_image.convert("RGBA")
