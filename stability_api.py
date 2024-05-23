@@ -161,6 +161,24 @@ class StabilityCore(StabilityBase):
     }
 
 
+class StabilityConservativeUpscale(StabilityBase):
+    API_ENDPOINT = "stable-image/upscale/conservative"
+    ACCEPT = "image/*"
+    INPUT_SPEC = {
+        "required": {
+            "image": ("IMAGE",),
+            "prompt": ("STRING", {"multiline": True}),
+        },
+        "optional": {
+            "negative_prompt": ("STRING", {"multiline": True}),
+            "seed": ("INT", {"default": 0, "min": 0, "max": 4294967294}),
+            "creativity": ("FLOAT", {"default": 0.35, "min": 0.2, "max": 0.5, "step": 0.01}),
+            "output_format": (["png", "webp", "jpeg"],),
+            "api_key_override": ("STRING", {"multiline": False}),
+        }
+    }
+
+
 class StabilityCreativeUpscale(StabilityBase):
     API_ENDPOINT = "stable-image/upscale/creative"
     POLL_ENDPOINT  = "stable-image/upscale/creative/result/"
@@ -189,6 +207,7 @@ class StabilityRemoveBackground(StabilityBase):
         },
     }
 
+
 class StabilityInpainting(StabilityBase):
     API_ENDPOINT = "stable-image/edit/inpaint"
     ACCEPT = "image/*"
@@ -196,10 +215,37 @@ class StabilityInpainting(StabilityBase):
         "required": {
             "image": ("IMAGE",),
             "mask": ("MASK",),
-            "prompt": ("STRING", {"multiline": True, "default": ""}),\
+            "prompt": ("STRING", {"multiline": True, "default": ""}),
         },
         "optional": {
-            "negative_prompt": ("STRING", {"multiline": True, "default": ""}),\
+            "negative_prompt": ("STRING", {"multiline": True, "default": ""}),
+            "seed": ("INT", {"default": 0, "min": 0, "max": 4294967294}),
+            "output_format": (["png", "webp", "jpeg"],),
+            "api_key_override": ("STRING", {"multiline": False}),
+        }
+    }
+    def _get_files(self, buffered, **kwargs):
+        mask = kwargs.get("mask")
+        to_pil = ToPILImage()
+        mask = mask.reshape((-1, 1, mask.shape[-2], mask.shape[-1])).movedim(1, -1).expand(-1, -1, -1, 3)
+        mask = to_pil(mask.squeeze(0).permute(2,0,1))
+        buffered_mask = BytesIO()
+        mask.save(buffered_mask, format="PNG")
+        return {
+            "image": buffered.getvalue(),
+            "mask": buffered_mask.getvalue(),
+        }
+
+
+class StabilityErase(StabilityBase):
+    API_ENDPOINT = "stable-image/edit/erase"
+    ACCEPT = "image/*"
+    INPUT_SPEC = {
+        "required": {
+            "image": ("IMAGE",),
+            "mask": ("MASK",)
+        },
+        "optional": {
             "seed": ("INT", {"default": 0, "min": 0, "max": 4294967294}),
             "output_format": (["png", "webp", "jpeg"],),
             "api_key_override": ("STRING", {"multiline": False}),
