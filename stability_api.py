@@ -71,7 +71,7 @@ class StabilityBase:
             headers["Authorization"] = get_api_key()
 
         if headers.get("Authorization") is None:
-            raise Exception(f"No Stability key set.\n\nUse your Stability AI API key by:\n1. Setting the SAI_API_KEY environment variable to your API key\n3. Placing inside sai_platform_key.txt\n4. Passing the API key as an argument to the function with the key 'api_key_override'")
+            raise Exception(f"No Stability key set.\n\nUse your Stability AI API key by:\n1. Setting the SAI_API_KEY environment variable to your API key\n2. Placing inside sai_platform_key.txt\n3. Passing the API key as an argument to the function with the key 'api_key_override'")
 
         headers["Accept"] = self.ACCEPT
 
@@ -113,7 +113,7 @@ class StabilityBase:
         else:
             error_info = response.json()
             if error_info.get("name") == "unauthorized":
-                raise Exception("Stability API Error: Unauthorized.\n\nUse your Stability AI API key by:\n1. Setting the SAI_API_KEY environment variable to your API key\n3. Placing inside sai_platform_key.txt\n4. Passing the API key as an argument to the function with the key 'api_key_override'")
+                raise Exception("Stability API Error: Unauthorized.\n\nUse your Stability AI API key by:\n1. Setting the SAI_API_KEY environment variable to your API key\n2. Placing inside sai_platform_key.txt\n3. Passing the API key as an argument to the function with the key 'api_key_override'")
             if error_info.get("name") == "payment_required":
                 raise Exception("Stability API Error: Not enough credits.\n\nPlease ensure your SAI API account has enough credits to complete this action.")
             if error_info.get("name") == "bad_request":
