@@ -161,6 +161,23 @@ class StabilityCore(StabilityBase):
     }
 
 
+class StabilityImageUltra(StabilityBase):
+    API_ENDPOINT = "stable-image/generate/ultra"
+    ACCEPT = "image/*"
+    INPUT_SPEC = {
+        "required": {
+            "prompt": ("STRING", {"multiline": True}),
+        },
+        "optional": {
+            "negative_prompt": ("STRING", {"multiline": True}),
+            "seed": ("INT", {"default": 0, "min": 0, "max": 4294967294}),
+            "aspect_ratio": (["16:9", "1:1", "21:9", "2:3", "3:2", "4:5", "5:4", "9:16", "9:21"],),
+            "output_format": (["png", "jpeg"],),
+            "api_key_override": ("STRING", {"multiline": False}),
+        },
+    }
+
+
 class StabilityConservativeUpscale(StabilityBase):
     API_ENDPOINT = "stable-image/upscale/conservative"
     ACCEPT = "image/*"
