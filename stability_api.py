@@ -372,3 +372,55 @@ class StabilityControlStructure(StabilityBase):
             "api_key_override": ("STRING", {"multiline": False}),
         },
     }
+
+
+class StabilitySearchAndRecolor(StabilityBase):
+    API_ENDPOINT = "stable-image/edit/search-and-recolor"
+    ACCEPT = "image/*"
+    INPUT_SPEC = {
+        "required": {
+            "image": ("IMAGE",),
+            "select_prompt": ("STRING", {"multiline": True}),
+            "prompt": ("STRING", {"multiline": True}),
+        },
+        "optional": {
+            "negative_prompt": ("STRING", {"multiline": True}),
+            "grow_mask": ("INT", {"default": 3, "min": 0, "max": 20, "step": 1}),
+            "seed": ("INT", {"default": 0, "min": 0, "max": 4294967294}),
+            "api_key_override": ("STRING", {"multiline": False}),
+            "output_format": (["png", "webp", "jpeg"],),
+        },
+    }
+
+
+class StabilityControlStyle(StabilityBase):
+    API_ENDPOINT = "stable-image/control/structure"
+    ACCEPT = "image/*"
+    INPUT_SPEC = {
+        "required": {
+            "image": ("IMAGE",),
+            "prompt": ("STRING", {"multiline": True}),
+        },
+        "optional": {
+            "aspect_ratio": (["16:9", "1:1", "21:9", "2:3", "3:2", "4:5", "5:4", "9:16", "9:21"],),
+            "fidelity": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01}),
+            "negative_prompt": ("STRING", {"multiline": True}),
+            "seed": ("INT", {"default": 0, "min": 0, "max": 4294967294}),
+            "output_format": (["png", "webp", "jpeg"],),
+            "api_key_override": ("STRING", {"multiline": False}),
+        },
+    }
+
+
+class StabilityFastUpscale(StabilityBase):
+    API_ENDPOINT = "stable-image/upscale/fast"
+    ACCEPT = "image/*"
+    INPUT_SPEC = {
+        "required": {
+            "image": ("IMAGE",),
+        },
+        "optional": {
+            "output_format": (["png", "webp", "jpeg"],),
+            "api_key_override": ("STRING", {"multiline": False}),
+        }
+    }
