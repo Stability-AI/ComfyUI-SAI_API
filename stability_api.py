@@ -287,7 +287,7 @@ class StabilitySearchAndReplace(StabilityBase):
     INPUT_SPEC = {
         "required": {
             "image": ("IMAGE",),
-            "search_prompt": ("STRING", {"multiline": True}, "Search Prompt"),
+            "search_prompt": ("STRING", {"multiline": True}),
             "prompt": ("STRING", {"multiline": True}),
         },
         "optional": {
