@@ -222,6 +222,10 @@ class StabilityRemoveBackground(StabilityBase):
         "required": {
             "image": ("IMAGE",),
         },
+        "optional": {
+            "output_format": (["png", "webp"],),
+            "api_key_override": ("STRING", {"multiline": False}),
+        }
     }
 
 
@@ -304,7 +308,7 @@ class StabilitySD3(StabilityBase):
     ACCEPT = "image/*"
     INPUT_SPEC = {
         "required": {
-            "model": (["sd3", "sd3-turbo"],),
+            "model": (["sd3.5-large", "sd3.5-large-turbo", "sd3.5-medium", "sd3-large", "sd3-large-turbo", "sd3-medium"],),
             "prompt": ("STRING", {"multiline": True}),
         },
         "optional": {
@@ -371,4 +375,53 @@ class StabilityControlStructure(StabilityBase):
             "output_format": (["png", "webp", "jpeg"],),
             "api_key_override": ("STRING", {"multiline": False}),
         },
+    }
+
+class StabilityFastUpscale(StabilityBase):
+    API_ENDPOINT = "stable-image/upscale/fast"
+    ACCEPT = "image/*"
+    INPUT_SPEC = {
+        "required": {
+            "image": ("IMAGE",),
+        },
+        "optional": {
+            "output_format": (["png", "webp", "jpeg"],),
+            "api_key_override": ("STRING", {"multiline": False}),
+        }
+    }
+
+class StabilityStyle(StabilityBase):
+    API_ENDPOINT = "stable-image/control/style"
+    ACCEPT = "image/*"
+    INPUT_SPEC = {
+        "required": {
+            "image": ("IMAGE",),
+            "prompt": ("STRING", {"multiline": True}),
+        },
+        "optional": {
+            "negative_prompt": ("STRING", {"multiline": True}),
+            "aspect_ratio": (["16:9", "1:1", "21:9", "2:3", "3:2", "4:5", "5:4", "9:16", "9:21"],),
+            "fidelity": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01}),
+            "seed": ("INT", {"default": 0, "min": 0, "max": 4294967294}),
+            "output_format": (["png", "webp", "jpeg"],),
+            "api_key_override": ("STRING", {"multiline": False}),
+        }
+    }
+
+class StabilitySearchAndRecolor(StabilityBase):
+    API_ENDPOINT = "stable-image/edit/search-and-recolor"
+    ACCEPT = "image/*"
+    INPUT_SPEC = {
+        "required": {
+            "image": ("IMAGE",),
+            "select_prompt": ("STRING", {"multiline": True}),
+            "prompt": ("STRING", {"multiline": True}),
+        },
+        "optional": {
+            "negative_prompt": ("STRING", {"multiline": True}),
+            "grow_mask": ("INT", {"default": 3, "min": 0, "max": 20}),
+            "seed": ("INT", {"default": 0, "min": 0, "max": 4294967294}),
+            "output_format": (["png", "webp", "jpeg"],),
+            "api_key_override": ("STRING", {"multiline": False}),
+        }
     }
