@@ -52,7 +52,7 @@ class StabilityBase:
 
         image = kwargs.get('image', None)
         if image is not None:
-            if self.API_ENDPOINT not in ["stable-image/control/style", "stable-image/control/sketch", "stable-image/control/structure"]:
+            if self.API_ENDPOINT != "stable-image/control/style":
                 kwargs["mode"] = "image-to-image"
                 kwargs.pop("aspect_ratio", None)
             image = ToPILImage()(image.squeeze(0).permute(2,0,1))
