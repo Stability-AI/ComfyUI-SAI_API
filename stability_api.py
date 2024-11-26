@@ -59,7 +59,28 @@ class StabilityBase:
             files = self._get_files(buffered, **kwargs)
         else:
             kwargs.pop("strength", None)
-
+        
+        image_subject = kwargs.get('subject_image', None)
+        if image_subject is not None:
+            buffered_sub = BytesIO() 
+            image_subject = ToPILImage()(image_subject.squeeze(0).permute(2,0,1))
+            image_subject.save(buffered_sub, format="PNG")
+            files = self._get_files_sub(buffered_sub, **kwargs)
+        
+        image_bg_ref = kwargs.get('background_reference', None)
+        if image_bg_ref is not None:
+            buffered_bg_ref = BytesIO()
+            image_bg_ref = ToPILImage()(image_bg_ref.squeeze(0).permute(2,0,1))
+            image_bg_ref.save(buffered_bg_ref, format="PNG")
+            files["background_reference"] = buffered_bg_ref.getvalue()
+        
+        image_lt_ref = kwargs.get('light_reference', None)
+        if image_lt_ref is not None:
+            buffered_lt_ref = BytesIO()
+            image_lt_ref = ToPILImage()(image_lt_ref.squeeze(0).permute(2,0,1))
+            image_lt_ref.save(buffered_lt_ref, format="PNG")
+            files["light_reference"] = buffered_lt_ref.getvalue()
+        
         style = kwargs.get('style', False)
         if style is False:
             kwargs.pop('style_preset', None)
@@ -76,7 +97,25 @@ class StabilityBase:
         headers["Accept"] = self.ACCEPT
 
         data = self._get_data(**kwargs)
-
+        
+        if kwargs.get('subject_image', None) is not None:
+            if 'subject_image' in data:
+                    del data['subject_image']
+            
+            if 'background_reference' in data:
+                    del data['background_reference']
+            
+            if 'light_reference' in data:
+                    del data['light_reference']
+            
+            if kwargs.get('light_reference', None) is not None:
+                if 'light_source_direction' in data:
+                    del data['light_source_direction']
+            else:
+                if 'light_source_direction' in data and data['light_source_direction'] == 'none':
+                    if 'light_source_strength' in data:
+                        del data['light_source_strength']
+        
         req = PreparedRequest()
         req.prepare_method('POST')
         req.prepare_url(f"{ROOT_API}{self.API_ENDPOINT}", None)
@@ -92,7 +131,7 @@ class StabilityBase:
                 while True:
                     response = requests.get(f"{ROOT_API}{self.POLL_ENDPOINT}{id}", headers=headers)
                     if response.status_code == 200:
-                        if self.ACCEPT == "image/*":
+                        if self.ACCEPT == "image/*" or self.ACCEPT == "*/*":
                             return self._return_image(response)
                         if self.ACCEPT == "video/*":
                             return self._return_video(response)
@@ -137,7 +176,12 @@ class StabilityBase:
         return {
             "image": buffered.getvalue()
         }
-
+    
+    def _get_files_sub(self, buffered, **kwargs):
+        return {
+            "subject_image": buffered.getvalue()
+        }
+    
     def _get_data(self, **kwargs):
         return {k: v for k, v in kwargs.items() if k != "image"}
 
@@ -198,8 +242,8 @@ class StabilityConservativeUpscale(StabilityBase):
 
 class StabilityCreativeUpscale(StabilityBase):
     API_ENDPOINT = "stable-image/upscale/creative"
-    POLL_ENDPOINT  = "stable-image/upscale/creative/result/"
-    ACCEPT = "image/*"
+    POLL_ENDPOINT  = "results/"
+    ACCEPT = "*/*"
     INPUT_SPEC = {
         "required": {
             "image": ("IMAGE",),
@@ -420,6 +464,31 @@ class StabilityFastUpscale(StabilityBase):
             "image": ("IMAGE",),
         },
         "optional": {
+            "output_format": (["png", "webp", "jpeg"],),
+            "api_key_override": ("STRING", {"multiline": False}),
+        }
+    }
+
+class StabilityReplaceRelight(StabilityBase):
+    API_ENDPOINT = "stable-image/edit/replace-background-and-relight"
+    POLL_ENDPOINT  = "results/"
+    ACCEPT = "*/*"
+    INPUT_SPEC = {
+        "required": {
+            "subject_image": ("IMAGE",),
+        },
+        "optional": {
+            "background_reference": ("IMAGE",),
+            "background_prompt": ("STRING", {"multiline": True}),
+            "foreground_prompt": ("STRING", {"multiline": True}),
+            "negative_prompt": ("STRING", {"multiline": True}),
+            "preserve_original_subject": ("FLOAT", {"default": 0.6, "min": 0.0, "max": 1.0, "step": 0.01}),
+            "original_background_depth": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01}),
+            "keep_original_background": ("BOOLEAN", {"default": False}),
+            "light_source_direction": (["none", "above", "below", "left", "right"],),
+            "light_reference": ("IMAGE",),
+            "light_source_strength": ("FLOAT", {"default": 0.3, "min": 0.0, "max": 1.0, "step": 0.01}),
+            "seed": ("INT", {"default": 0, "min": 0, "max": 4294967294}),
             "output_format": (["png", "webp", "jpeg"],),
             "api_key_override": ("STRING", {"multiline": False}),
         }
