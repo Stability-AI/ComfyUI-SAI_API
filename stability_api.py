@@ -213,8 +213,10 @@ class StabilityImageUltra(StabilityBase):
             "prompt": ("STRING", {"multiline": True}),
         },
         "optional": {
+            "image": ("IMAGE",),
             "negative_prompt": ("STRING", {"multiline": True}),
             "seed": ("INT", {"default": 0, "min": 0, "max": 4294967294}),
+            "strength": ("FLOAT", {"default": 0.5, "min": 0.01, "max": 1.0, "step": 0.01}),
             "aspect_ratio": (["16:9", "1:1", "21:9", "2:3", "3:2", "4:5", "5:4", "9:16", "9:21"],),
             "output_format": (["png", "jpeg"],),
             "api_key_override": ("STRING", {"multiline": False}),
@@ -252,7 +254,7 @@ class StabilityCreativeUpscale(StabilityBase):
         "optional": {
             "negative_prompt": ("STRING", {"multiline": True}),
             "seed": ("INT", {"default": 0, "min": 0, "max": 4294967294}),
-            "creativity": ("FLOAT", {"default": 0.3, "min": 0.01, "max": 0.35, "step": 0.01}),
+            "creativity": ("FLOAT", {"default": 0.3, "min": 0.0, "max": 0.35, "step": 0.01}),
             "output_format": (["png", "webp", "jpeg"],),
             "api_key_override": ("STRING", {"multiline": False}),
         }
@@ -280,6 +282,7 @@ class StabilityInpainting(StabilityBase):
         },
         "optional": {
             "negative_prompt": ("STRING", {"multiline": True, "default": ""}),
+            "grow_mask": ("INT", {"default": 5, "min": 0, "max": 20}),
             "seed": ("INT", {"default": 0, "min": 0, "max": 4294967294}),
             "output_format": (["png", "webp", "jpeg"],),
             "api_key_override": ("STRING", {"multiline": False}),
@@ -307,6 +310,7 @@ class StabilityErase(StabilityBase):
             "mask": ("MASK",)
         },
         "optional": {
+            "grow_mask": ("INT", {"default": 5, "min": 0, "max": 20}),
             "seed": ("INT", {"default": 0, "min": 0, "max": 4294967294}),
             "output_format": (["png", "webp", "jpeg"],),
             "api_key_override": ("STRING", {"multiline": False}),
@@ -336,6 +340,7 @@ class StabilitySearchAndReplace(StabilityBase):
         },
         "optional": {
             "negative_prompt": ("STRING", {"multiline": True}),
+            "grow_mask": ("INT", {"default": 3, "min": 0, "max": 20}),
             "seed": ("INT", {"default": 0, "min": 0, "max": 4294967294}),
             "api_key_override": ("STRING", {"multiline": False}),
             "output_format": (["png", "webp", "jpeg"],),
@@ -348,12 +353,13 @@ class StabilitySD3(StabilityBase):
     ACCEPT = "image/*"
     INPUT_SPEC = {
         "required": {
-            "model": (["sd3.5-large", "sd3.5-large-turbo", "sd3-large", "sd3-large-turbo", "sd3-medium"],),
+            "model": (["sd3.5-large", "sd3.5-large-turbo", "sd3.5-medium", "sd3-large", "sd3-large-turbo", "sd3-medium"],),
             "prompt": ("STRING", {"multiline": True}),
         },
         "optional": {
             "image": ("IMAGE",),
             "negative_prompt": ("STRING", {"multiline": True}),
+            "cfg_scale": ("FLOAT", {"default": 7.0, "min": 1.0, "max": 10.0, "step": 0.01}),
             "seed": ("INT", {"default": 0, "min": 0, "max": 4294967294}),
             "strength": ("FLOAT", {"default": 0.5, "min": 0.01, "max": 1.0, "step": 0.01}),
             "aspect_ratio": (["16:9", "1:1", "21:9", "2:3", "3:2", "4:5", "5:4", "9:16", "9:21"],),
@@ -376,6 +382,7 @@ class StabilityOutpainting(StabilityBase):
         },
         "optional": {
             "prompt": ("STRING", {"multiline": True}),
+            "creativity": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01}),
             "seed": ("INT", {"default": 0, "min": 0, "max": 4294967294}),
             "output_format": (["png", "webp", "jpeg"],),
             "api_key_override": ("STRING", {"multiline": False}),
