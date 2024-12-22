@@ -52,8 +52,9 @@ class StabilityBase:
 
         image = kwargs.get('image', None)
         if image is not None:
-            kwargs["mode"] = "image-to-image"
-            kwargs.pop("aspect_ratio", None)
+            if self.API_ENDPOINT != "stable-image/control/style":
+                kwargs["mode"] = "image-to-image"
+                kwargs.pop("aspect_ratio", None)
             image = ToPILImage()(image.squeeze(0).permute(2,0,1))
             image.save(buffered, format="PNG")
             files = self._get_files(buffered, **kwargs)
@@ -97,6 +98,9 @@ class StabilityBase:
         headers["Accept"] = self.ACCEPT
 
         data = self._get_data(**kwargs)
+        
+        if kwargs.get('aspect_ratio', None) is not None:
+            data['aspect_ratio'] = data['aspect_ratio'].split("(", 1)[0]
         
         if kwargs.get('subject_image', None) is not None:
             if 'subject_image' in data:
@@ -197,7 +201,7 @@ class StabilityCore(StabilityBase):
             "negative_prompt": ("STRING", {"multiline": True}),
             "seed": ("INT", {"default": 0, "min": 0, "max": 4294967294}),
             "output_format": (["png", "webp", "jpeg"],),
-            "aspect_ratio": (["16:9", "1:1", "21:9", "2:3", "3:2", "4:5", "5:4", "9:16", "9:21"],),
+            "aspect_ratio": (["1:1(1536, 1536)", "5:4(1632, 1344)", "3:2(1824, 1248)", "16:9(2016, 1152)", "21:9(2304, 960)", "4:5(1344, 1632)", "2:3(1248, 1824)", "9:16(1152, 2016)", "9:21(960, 2304)"],),
             "style": ("BOOLEAN", {"default": False}),
             "style_preset": (["3d-model", "analog-film", "anime", "cinematic", "comic-book", "digital-art", "enhance", "fantasy-art", "isometric", "line-art", "low-poly", "modeling-compound", "neon-punk", "origami", "photographic", "pixel-art", "tile-texture"],),
             "api_key_override": ("STRING", {"multiline": False}),
@@ -216,8 +220,8 @@ class StabilityImageUltra(StabilityBase):
             "image": ("IMAGE",),
             "negative_prompt": ("STRING", {"multiline": True}),
             "seed": ("INT", {"default": 0, "min": 0, "max": 4294967294}),
-            "strength": ("FLOAT", {"default": 0.5, "min": 0.01, "max": 1.0, "step": 0.01}),
-            "aspect_ratio": (["16:9", "1:1", "21:9", "2:3", "3:2", "4:5", "5:4", "9:16", "9:21"],),
+            "strength": ("FLOAT", {"default": 0.7, "min": 0.0, "max": 1.0, "step": 0.01}),
+            "aspect_ratio": (["1:1(1024, 1024)", "5:4(1088, 896)", "3:2(1216, 832)", "16:9(1344, 768)", "21:9(1536, 640)", "4:5(896, 1088)", "2:3(832, 1216)", "9:16(768, 1344)", "9:21(640, 1536)"],),
             "output_format": (["png", "jpeg"],),
             "api_key_override": ("STRING", {"multiline": False}),
         },
@@ -361,8 +365,8 @@ class StabilitySD3(StabilityBase):
             "negative_prompt": ("STRING", {"multiline": True}),
             "cfg_scale": ("FLOAT", {"default": 7.0, "min": 1.0, "max": 10.0, "step": 0.01}),
             "seed": ("INT", {"default": 0, "min": 0, "max": 4294967294}),
-            "strength": ("FLOAT", {"default": 0.5, "min": 0.01, "max": 1.0, "step": 0.01}),
-            "aspect_ratio": (["16:9", "1:1", "21:9", "2:3", "3:2", "4:5", "5:4", "9:16", "9:21"],),
+            "strength": ("FLOAT", {"default": 0.7, "min": 0.0, "max": 1.0, "step": 0.01}),
+            "aspect_ratio": (["1:1(1024, 1024)", "5:4(1088, 896)", "3:2(1216, 832)", "16:9(1344, 768)", "21:9(1536, 640)", "4:5(896, 1088)", "2:3(832, 1216)", "9:16(768, 1344)", "9:21(640, 1536)"],),
             "output_format": (["png", "jpeg"],),
             "api_key_override": ("STRING", {"multiline": False}),
         },
@@ -445,7 +449,7 @@ class StabilitySearchAndRecolor(StabilityBase):
 
 
 class StabilityControlStyle(StabilityBase):
-    API_ENDPOINT = "stable-image/control/structure"
+    API_ENDPOINT = "stable-image/control/style"
     ACCEPT = "image/*"
     INPUT_SPEC = {
         "required": {
@@ -453,7 +457,7 @@ class StabilityControlStyle(StabilityBase):
             "prompt": ("STRING", {"multiline": True}),
         },
         "optional": {
-            "aspect_ratio": (["16:9", "1:1", "21:9", "2:3", "3:2", "4:5", "5:4", "9:16", "9:21"],),
+            "aspect_ratio": (["1:1(1024, 1024)", "5:4(1144, 915)", "3:2(1254, 836)", "16:9(1365, 768)", "21:9(1564, 670)", "4:5(915, 1144)", "2:3(836, 1254)", "9:16(768, 1365)", "9:21(670, 1564)"],),
             "fidelity": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01}),
             "negative_prompt": ("STRING", {"multiline": True}),
             "seed": ("INT", {"default": 0, "min": 0, "max": 4294967294}),
