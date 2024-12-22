@@ -66,7 +66,7 @@ class StabilityBase:
             buffered_sub = BytesIO() 
             image_subject = ToPILImage()(image_subject.squeeze(0).permute(2,0,1))
             image_subject.save(buffered_sub, format="PNG")
-            files = self._get_files_sub(buffered_sub, **kwargs)
+            files["subject_image"] = buffered_sub.getvalue()
         
         image_bg_ref = kwargs.get('background_reference', None)
         if image_bg_ref is not None:
@@ -126,7 +126,7 @@ class StabilityBase:
         req.prepare_headers(headers)
         req.prepare_body(data=data, files=files)
         response = requests.Session().send(req)
-
+        
         if response.status_code == 200:
             if self.POLL_ENDPOINT != "":
                 id = response.json().get("id")
@@ -181,13 +181,8 @@ class StabilityBase:
             "image": buffered.getvalue()
         }
     
-    def _get_files_sub(self, buffered, **kwargs):
-        return {
-            "subject_image": buffered.getvalue()
-        }
-    
     def _get_data(self, **kwargs):
-        return {k: v for k, v in kwargs.items() if k != "image"}
+        return {k: v for k, v in kwargs.items() if k != "image" and k != "mask"}
 
 
 class StabilityCore(StabilityBase):
@@ -281,10 +276,10 @@ class StabilityInpainting(StabilityBase):
     INPUT_SPEC = {
         "required": {
             "image": ("IMAGE",),
-            "mask": ("MASK",),
             "prompt": ("STRING", {"multiline": True, "default": ""}),
         },
         "optional": {
+            "mask": ("MASK",),
             "negative_prompt": ("STRING", {"multiline": True, "default": ""}),
             "grow_mask": ("INT", {"default": 5, "min": 0, "max": 20}),
             "seed": ("INT", {"default": 0, "min": 0, "max": 4294967294}),
@@ -293,16 +288,20 @@ class StabilityInpainting(StabilityBase):
         }
     }
     def _get_files(self, buffered, **kwargs):
-        mask = kwargs.get("mask")
-        to_pil = ToPILImage()
-        mask = mask.reshape((-1, 1, mask.shape[-2], mask.shape[-1])).movedim(1, -1).expand(-1, -1, -1, 3)
-        mask = to_pil(mask.squeeze(0).permute(2,0,1))
-        buffered_mask = BytesIO()
-        mask.save(buffered_mask, format="PNG")
-        return {
-            "image": buffered.getvalue(),
-            "mask": buffered_mask.getvalue(),
-        }
+        mask = kwargs.get("mask", None)
+        if mask != None:
+            mask = mask.reshape((-1, 1, mask.shape[-2], mask.shape[-1])).movedim(1, -1).expand(-1, -1, -1, 3)
+            mask = ToPILImage()(mask.squeeze(0).permute(2,0,1))
+            buffered_mask = BytesIO()
+            mask.save(buffered_mask, format="PNG")
+            return {
+                "image": buffered.getvalue(),
+                "mask": buffered_mask.getvalue(),
+            }
+        else:
+            return {
+                "image": buffered.getvalue(),
+            }
 
 
 class StabilityErase(StabilityBase):
@@ -311,9 +310,9 @@ class StabilityErase(StabilityBase):
     INPUT_SPEC = {
         "required": {
             "image": ("IMAGE",),
-            "mask": ("MASK",)
         },
         "optional": {
+            "mask": ("MASK",),
             "grow_mask": ("INT", {"default": 5, "min": 0, "max": 20}),
             "seed": ("INT", {"default": 0, "min": 0, "max": 4294967294}),
             "output_format": (["png", "webp", "jpeg"],),
@@ -321,16 +320,20 @@ class StabilityErase(StabilityBase):
         }
     }
     def _get_files(self, buffered, **kwargs):
-        mask = kwargs.get("mask")
-        to_pil = ToPILImage()
-        mask = mask.reshape((-1, 1, mask.shape[-2], mask.shape[-1])).movedim(1, -1).expand(-1, -1, -1, 3)
-        mask = to_pil(mask.squeeze(0).permute(2,0,1))
-        buffered_mask = BytesIO()
-        mask.save(buffered_mask, format="PNG")
-        return {
-            "image": buffered.getvalue(),
-            "mask": buffered_mask.getvalue(),
-        }
+        mask = kwargs.get("mask", None)
+        if mask != None:
+            mask = mask.reshape((-1, 1, mask.shape[-2], mask.shape[-1])).movedim(1, -1).expand(-1, -1, -1, 3)
+            mask = ToPILImage()(mask.squeeze(0).permute(2,0,1))
+            buffered_mask = BytesIO()
+            mask.save(buffered_mask, format="PNG")
+            return {
+                "image": buffered.getvalue(),
+                "mask": buffered_mask.getvalue(),
+            }
+        else:
+            return {
+                "image": buffered.getvalue(),
+            }
 
 
 class StabilitySearchAndReplace(StabilityBase):
