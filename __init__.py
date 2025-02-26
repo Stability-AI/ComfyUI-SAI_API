@@ -1,4 +1,4 @@
-from .stability_api import StabilityConservativeUpscale, StabilityCreativeUpscale, StabilityRemoveBackground, StabilityInpainting, StabilityErase, StabilityCore, StabilityImageUltra, StabilitySearchAndReplace, StabilityOutpainting, StabilitySD3, StabilityControlSketch, StabilityControlStructure, StabilityFastUpscale, StabilityStyle, StabilitySearchAndRecolor
+from .stability_api import StabilityConservativeUpscale, StabilityCreativeUpscale, StabilityRemoveBackground, StabilityInpainting, StabilityErase, StabilityCore, StabilityImageUltra, StabilitySearchAndReplace, StabilityOutpainting, StabilitySD3, StabilityControlSketch, StabilityControlStructure, StabilityFastUpscale, StabilityControlStyle, StabilitySearchAndRecolor
 
 NODE_CLASS_MAPPINGS = {
     "Stability Conservative Upscale": StabilityConservativeUpscale,
@@ -14,6 +14,6 @@ NODE_CLASS_MAPPINGS = {
     "Stability Control Sketch": StabilityControlSketch,
     "Stability Control Structure": StabilityControlStructure,
     "Stability Fast Upscale": StabilityFastUpscale,
-    "Stability Style": StabilityStyle,
+    "Stability Style": StabilityControlStyle,
     "Stability Search and Recolor": StabilitySearchAndRecolor,
 }
