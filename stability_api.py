@@ -267,6 +267,10 @@ class StabilityRemoveBackground(StabilityBase):
         "required": {
             "image": ("IMAGE",),
         },
+        "optional": {
+            "output_format": (["png", "webp"],),
+            "api_key_override": ("STRING", {"multiline": False}),
+        }
     }
 
 
@@ -385,7 +389,7 @@ class StabilityOutpainting(StabilityBase):
             "left": ("INT", {"default": 0, "min": 0, "max": 512}),
             "right": ("INT", {"default": 0, "min": 0, "max": 512}),
             "up": ("INT", {"default": 0, "min": 0, "max": 512}),
-            "down": ("INT", {"default": 0, "min": 0, "max": 512}),\
+            "down": ("INT", {"default": 0, "min": 0, "max": 512}),
         },
         "optional": {
             "prompt": ("STRING", {"multiline": True}),
@@ -431,25 +435,18 @@ class StabilityControlStructure(StabilityBase):
         },
     }
 
-
-class StabilitySearchAndRecolor(StabilityBase):
-    API_ENDPOINT = "stable-image/edit/search-and-recolor"
+class StabilityFastUpscale(StabilityBase):
+    API_ENDPOINT = "stable-image/upscale/fast"
     ACCEPT = "image/*"
     INPUT_SPEC = {
         "required": {
             "image": ("IMAGE",),
-            "select_prompt": ("STRING", {"multiline": True}),
-            "prompt": ("STRING", {"multiline": True}),
         },
         "optional": {
-            "negative_prompt": ("STRING", {"multiline": True}),
-            "grow_mask": ("INT", {"default": 3, "min": 0, "max": 20, "step": 1}),
-            "seed": ("INT", {"default": 0, "min": 0, "max": 4294967294}),
-            "api_key_override": ("STRING", {"multiline": False}),
             "output_format": (["png", "webp", "jpeg"],),
-        },
+            "api_key_override": ("STRING", {"multiline": False}),
+        }
     }
-
 
 class StabilityControlStyle(StabilityBase):
     API_ENDPOINT = "stable-image/control/style"
@@ -469,18 +466,22 @@ class StabilityControlStyle(StabilityBase):
         },
     }
 
-
-class StabilityFastUpscale(StabilityBase):
-    API_ENDPOINT = "stable-image/upscale/fast"
+class StabilitySearchAndRecolor(StabilityBase):
+    API_ENDPOINT = "stable-image/edit/search-and-recolor"
     ACCEPT = "image/*"
     INPUT_SPEC = {
         "required": {
             "image": ("IMAGE",),
+            "select_prompt": ("STRING", {"multiline": True}),
+            "prompt": ("STRING", {"multiline": True}),
         },
         "optional": {
-            "output_format": (["png", "webp", "jpeg"],),
+            "negative_prompt": ("STRING", {"multiline": True}),
+            "grow_mask": ("INT", {"default": 3, "min": 0, "max": 20, "step": 1}),
+            "seed": ("INT", {"default": 0, "min": 0, "max": 4294967294}),
             "api_key_override": ("STRING", {"multiline": False}),
-        }
+            "output_format": (["png", "webp", "jpeg"],),
+        },
     }
 
 class StabilityReplaceRelight(StabilityBase):
