@@ -83,9 +83,9 @@ class StabilityBase:
             files["light_reference"] = buffered_lt_ref.getvalue()
         
         style = kwargs.get('style', False)
-        if style is False:
+        if style is False or (self.API_ENDPOINT == "stable-image/generate/sd3" and "sd3-" in kwargs.get('model', "sd3-")):
             kwargs.pop('style_preset', None)
-
+        
         headers = {}
         if kwargs.get("api_key_override"):
             headers["Authorization"] = kwargs.get("api_key_override")
@@ -98,6 +98,9 @@ class StabilityBase:
         headers["Accept"] = self.ACCEPT
 
         data = self._get_data(**kwargs)
+        
+        if self.API_ENDPOINT == "stable-image/generate/sd3" and kwargs.get('model', "sd3-large-turbo") == "sd3-large-turbo":
+            del data['negative_prompt']
         
         if kwargs.get('aspect_ratio', None) is not None:
             data['aspect_ratio'] = data['aspect_ratio'].split("(", 1)[0]
@@ -184,6 +187,8 @@ class StabilityBase:
     def _get_data(self, **kwargs):
         return {k: v for k, v in kwargs.items() if k != "image" and k != "mask"}
 
+style_preset_list = ["3d-model", "analog-film", "anime", "cinematic", "comic-book", "digital-art", "enhance", "fantasy-art", "isometric", "line-art", "low-poly", "modeling-compound", "neon-punk", "origami", "photographic", "pixel-art", "tile-texture"]
+output_format_list = ["png", "webp", "jpeg"]
 
 class StabilityCore(StabilityBase):
     API_ENDPOINT = "stable-image/generate/core"
@@ -195,10 +200,10 @@ class StabilityCore(StabilityBase):
         "optional": {
             "negative_prompt": ("STRING", {"multiline": True}),
             "seed": ("INT", {"default": 0, "min": 0, "max": 4294967294}),
-            "output_format": (["png", "webp", "jpeg"],),
             "aspect_ratio": (["1:1(1536, 1536)", "5:4(1632, 1344)", "3:2(1824, 1248)", "16:9(2016, 1152)", "21:9(2304, 960)", "4:5(1344, 1632)", "2:3(1248, 1824)", "9:16(1152, 2016)", "9:21(960, 2304)"],),
             "style": ("BOOLEAN", {"default": False}),
-            "style_preset": (["3d-model", "analog-film", "anime", "cinematic", "comic-book", "digital-art", "enhance", "fantasy-art", "isometric", "line-art", "low-poly", "modeling-compound", "neon-punk", "origami", "photographic", "pixel-art", "tile-texture"],),
+            "style_preset": (style_preset_list,),
+            "output_format": (output_format_list,),
             "api_key_override": ("STRING", {"multiline": False}),
         }
     }
@@ -217,7 +222,9 @@ class StabilityImageUltra(StabilityBase):
             "seed": ("INT", {"default": 0, "min": 0, "max": 4294967294}),
             "strength": ("FLOAT", {"default": 0.7, "min": 0.0, "max": 1.0, "step": 0.01}),
             "aspect_ratio": (["1:1(1024, 1024)", "5:4(1088, 896)", "3:2(1216, 832)", "16:9(1344, 768)", "21:9(1536, 640)", "4:5(896, 1088)", "2:3(832, 1216)", "9:16(768, 1344)", "9:21(640, 1536)"],),
-            "output_format": (["png", "jpeg"],),
+            "style": ("BOOLEAN", {"default": False}),
+            "style_preset": (style_preset_list,),
+            "output_format": (output_format_list,),
             "api_key_override": ("STRING", {"multiline": False}),
         },
     }
@@ -235,7 +242,7 @@ class StabilityConservativeUpscale(StabilityBase):
             "negative_prompt": ("STRING", {"multiline": True}),
             "seed": ("INT", {"default": 0, "min": 0, "max": 4294967294}),
             "creativity": ("FLOAT", {"default": 0.35, "min": 0.2, "max": 0.5, "step": 0.01}),
-            "output_format": (["png", "webp", "jpeg"],),
+            "output_format": (output_format_list,),
             "api_key_override": ("STRING", {"multiline": False}),
         }
     }
@@ -254,7 +261,9 @@ class StabilityCreativeUpscale(StabilityBase):
             "negative_prompt": ("STRING", {"multiline": True}),
             "seed": ("INT", {"default": 0, "min": 0, "max": 4294967294}),
             "creativity": ("FLOAT", {"default": 0.3, "min": 0.0, "max": 0.35, "step": 0.01}),
-            "output_format": (["png", "webp", "jpeg"],),
+            "style": ("BOOLEAN", {"default": False}),
+            "style_preset": (style_preset_list,),
+            "output_format": (output_format_list,),
             "api_key_override": ("STRING", {"multiline": False}),
         }
     }
@@ -268,7 +277,7 @@ class StabilityRemoveBackground(StabilityBase):
             "image": ("IMAGE",),
         },
         "optional": {
-            "output_format": (["png", "webp"],),
+            "output_format": (output_format_list,),
             "api_key_override": ("STRING", {"multiline": False}),
         }
     }
@@ -287,7 +296,9 @@ class StabilityInpainting(StabilityBase):
             "negative_prompt": ("STRING", {"multiline": True, "default": ""}),
             "grow_mask": ("INT", {"default": 5, "min": 0, "max": 20}),
             "seed": ("INT", {"default": 0, "min": 0, "max": 4294967294}),
-            "output_format": (["png", "webp", "jpeg"],),
+            "style": ("BOOLEAN", {"default": False}),
+            "style_preset": (style_preset_list,),
+            "output_format": (output_format_list,),
             "api_key_override": ("STRING", {"multiline": False}),
         }
     }
@@ -319,7 +330,7 @@ class StabilityErase(StabilityBase):
             "mask": ("MASK",),
             "grow_mask": ("INT", {"default": 5, "min": 0, "max": 20}),
             "seed": ("INT", {"default": 0, "min": 0, "max": 4294967294}),
-            "output_format": (["png", "webp", "jpeg"],),
+            "output_format": (output_format_list,),
             "api_key_override": ("STRING", {"multiline": False}),
         }
     }
@@ -353,8 +364,10 @@ class StabilitySearchAndReplace(StabilityBase):
             "negative_prompt": ("STRING", {"multiline": True}),
             "grow_mask": ("INT", {"default": 3, "min": 0, "max": 20}),
             "seed": ("INT", {"default": 0, "min": 0, "max": 4294967294}),
+            "style": ("BOOLEAN", {"default": False}),
+            "style_preset": (style_preset_list,),
+            "output_format": (output_format_list,),
             "api_key_override": ("STRING", {"multiline": False}),
-            "output_format": (["png", "webp", "jpeg"],),
         },
     }
 
@@ -374,7 +387,9 @@ class StabilitySD3(StabilityBase):
             "seed": ("INT", {"default": 0, "min": 0, "max": 4294967294}),
             "strength": ("FLOAT", {"default": 0.7, "min": 0.0, "max": 1.0, "step": 0.01}),
             "aspect_ratio": (["1:1(1024, 1024)", "5:4(1088, 896)", "3:2(1216, 832)", "16:9(1344, 768)", "21:9(1536, 640)", "4:5(896, 1088)", "2:3(832, 1216)", "9:16(768, 1344)", "9:21(640, 1536)"],),
-            "output_format": (["png", "jpeg"],),
+            "style": ("BOOLEAN", {"default": False}),
+            "style_preset": (style_preset_list,),
+            "output_format": (output_format_list,),
             "api_key_override": ("STRING", {"multiline": False}),
         },
     }
@@ -395,7 +410,9 @@ class StabilityOutpainting(StabilityBase):
             "prompt": ("STRING", {"multiline": True}),
             "creativity": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01}),
             "seed": ("INT", {"default": 0, "min": 0, "max": 4294967294}),
-            "output_format": (["png", "webp", "jpeg"],),
+            "style": ("BOOLEAN", {"default": False}),
+            "style_preset": (style_preset_list,),
+            "output_format": (output_format_list,),
             "api_key_override": ("STRING", {"multiline": False}),
         },
     }
@@ -412,7 +429,9 @@ class StabilityControlSketch(StabilityBase):
             "control_strength": ("FLOAT", {"default": 0.7, "min": 0.01, "max": 1.0, "step": 0.01}),
             "negative_prompt": ("STRING", {"multiline": True}),
             "seed": ("INT", {"default": 0, "min": 0, "max": 4294967294}),
-            "output_format": (["png", "webp", "jpeg"],),
+            "style": ("BOOLEAN", {"default": False}),
+            "style_preset": (style_preset_list,),
+            "output_format": (output_format_list,),
             "api_key_override": ("STRING", {"multiline": False}),
         },
     }
@@ -430,7 +449,9 @@ class StabilityControlStructure(StabilityBase):
             "control_strength": ("FLOAT", {"default": 0.7, "min": 0.01, "max": 1.0, "step": 0.01}),
             "negative_prompt": ("STRING", {"multiline": True}),
             "seed": ("INT", {"default": 0, "min": 0, "max": 4294967294}),
-            "output_format": (["png", "webp", "jpeg"],),
+            "style": ("BOOLEAN", {"default": False}),
+            "style_preset": (style_preset_list,),
+            "output_format": (output_format_list,),
             "api_key_override": ("STRING", {"multiline": False}),
         },
     }
@@ -443,7 +464,7 @@ class StabilityFastUpscale(StabilityBase):
             "image": ("IMAGE",),
         },
         "optional": {
-            "output_format": (["png", "webp", "jpeg"],),
+            "output_format": (output_format_list,),
             "api_key_override": ("STRING", {"multiline": False}),
         }
     }
@@ -461,7 +482,9 @@ class StabilityControlStyle(StabilityBase):
             "fidelity": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01}),
             "negative_prompt": ("STRING", {"multiline": True}),
             "seed": ("INT", {"default": 0, "min": 0, "max": 4294967294}),
-            "output_format": (["png", "webp", "jpeg"],),
+            "style": ("BOOLEAN", {"default": False}),
+            "style_preset": (style_preset_list,),
+            "output_format": (output_format_list,),
             "api_key_override": ("STRING", {"multiline": False}),
         },
     }
@@ -479,8 +502,10 @@ class StabilitySearchAndRecolor(StabilityBase):
             "negative_prompt": ("STRING", {"multiline": True}),
             "grow_mask": ("INT", {"default": 3, "min": 0, "max": 20, "step": 1}),
             "seed": ("INT", {"default": 0, "min": 0, "max": 4294967294}),
+            "style": ("BOOLEAN", {"default": False}),
+            "style_preset": (style_preset_list,),
+            "output_format": (output_format_list,),
             "api_key_override": ("STRING", {"multiline": False}),
-            "output_format": (["png", "webp", "jpeg"],),
         },
     }
 
@@ -504,7 +529,7 @@ class StabilityReplaceRelight(StabilityBase):
             "light_reference": ("IMAGE",),
             "light_source_strength": ("FLOAT", {"default": 0.3, "min": 0.0, "max": 1.0, "step": 0.01}),
             "seed": ("INT", {"default": 0, "min": 0, "max": 4294967294}),
-            "output_format": (["png", "webp", "jpeg"],),
+            "output_format": (output_format_list,),
             "api_key_override": ("STRING", {"multiline": False}),
         }
     }
