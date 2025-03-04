@@ -11,23 +11,24 @@ Alternatively you can write your API key to file "`sai_platform_key.txt`"
 You can also use and/or override the above by entering your API key in the "`api_key_override`" field of each node, but be careful sharing workflows containing your API key.
 
 Includes nodes for all the v2 (Stable Image) routes listed at https://platform.stability.ai
-Nodes list:
-    Stability Conservative Upscale
-    Stability Creative Upscale
-    Stability Remove Background
-    Stability Erase
-    Stability Inpainting
-    Stability Image Core
-    Stability Image Ultra
-    Stability Search and Replace
-    Stability Outpainting
-    Stability SD3
-    Stability Control Sketch
-    Stability Control Structure
-    Stability Search And Recolor
-    Stability Control Style
-    Stability Fast Upscale
-    Stability Replace Background and Relight
+
+#### Nodes list:
+- Stability Conservative Upscale  
+- Stability Creative Upscale  
+- Stability Remove Background  
+- Stability Erase  
+- Stability Inpainting  
+- Stability Image Core  
+- Stability Image Ultra  
+- Stability Search and Replace  
+- Stability Outpainting  
+- Stability SD3  
+- Stability Control Sketch  
+- Stability Control Structure  
+- Stability Search And Recolor  
+- Stability Control Style  
+- Stability Fast Upscale  
+- Stability Replace Background and Relight 
 
 # License
 
