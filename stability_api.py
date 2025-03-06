@@ -101,6 +101,7 @@ class StabilityBase:
         
         if self.API_ENDPOINT == "stable-image/generate/sd3" and kwargs.get('model', "sd3-large-turbo") == "sd3-large-turbo":
             del data['negative_prompt']
+            del data['cfg_scale']
         
         if kwargs.get('aspect_ratio', None) is not None:
             data['aspect_ratio'] = data['aspect_ratio'].split("(", 1)[0]
